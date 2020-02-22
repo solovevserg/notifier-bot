@@ -13,5 +13,3 @@ FROM node:10 as run
 
 COPY --from=build /app/dist/ /app
 CMD [ "node" "/app/main.js"]
-
-# TODO: package only built js in DOCKER
