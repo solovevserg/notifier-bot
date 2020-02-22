@@ -24,7 +24,7 @@ bot.launch();
 
 const app = express();
 
-app.post('/message', function (req, res) {
+app.post('/broadcast', function (req, res) {
     const message = req.param('message') || req.body as string;
     if (message) {
         broadcast(message);
