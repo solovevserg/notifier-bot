@@ -1,0 +1,54 @@
+stages:
+  - dockerize
+  - deploy
+
+#DOCKERIZING
+
+# dockerize_static:
+#   stage: dockerize
+#   image: docker
+#   variables:
+#     GIT_STRATEGY: clone
+#     DOCKER_DRIVER: overlay2
+#   services:
+#     - docker:dind
+#   script:
+#     - docker build -t bmstu-structure-view ./assets
+#   after_script:
+#     - docker login --username=$DOCKER_USER --password=$DOCKER_PASSWD
+#     - docker tag bmstu-structure-view $DOCKER_USER/bmstu-structure-view
+#     - docker push $DOCKER_USER/bmstu-structure-view
+
+dockerize_api:
+  stage: dockerize
+  image: docker
+  variables:
+    GIT_STRATEGY: clone
+    DOCKER_DRIVER: overlay2
+  services:
+    - docker:dind
+  script:
+    - docker build -t sdal-api .
+  after_script:
+    - docker login --username=$DOCKER_USER --password=$DOCKER_PASSWD
+    - docker tag sdal-api $DOCKER_USER/sdal-api
+    - docker push $DOCKER_USER/sdal-api
+
+# DEPLOYING
+
+deploy:
+  stage: deploy
+  image: ictu/sshpass
+  variables:
+    GIT_STRATEGY: clone
+  dependencies:
+    # - dockerize_static
+    - dockerize_api
+  script:
+    # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker pull almosvirog/bmstu-structure-view
+    # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f bmstu-structure-view || true
+    # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 80:80 --name bmstu-structure-view almosvirog/bmstu-structure-view
+
+    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker pull almosvirog/sdal-api
+    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f sdal-api || true
+    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 3000:3000 --name sdal-api almosvirog/sdal-api
