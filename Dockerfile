@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:10 as build
 
 WORKDIR /app
 
@@ -6,6 +6,12 @@ WORKDIR /app
 COPY . /app
 
 RUN npm install
+RUN npm install -g typescript
+RUN tsc
+
+FROM node:10 as run
+
+COPY --from=build /app/dist/ /app
+CMD [ "node" "/app/main.js"]
 
 # TODO: package only built js in DOCKER
-CMD [ "node", "run", "start" ]
