@@ -28,11 +28,11 @@ dockerize_api:
   services:
     - docker:dind
   script:
-    - docker build -t sdal-api .
+    - docker build -t sdal-notifier-bot .
   after_script:
     - docker login --username=$DOCKER_USER --password=$DOCKER_PASSWD
-    - docker tag sdal-api $DOCKER_USER/sdal-api
-    - docker push $DOCKER_USER/sdal-api
+    - docker tag sdal-notifier-bot $DOCKER_USER/sdal-notifier-bot
+    - docker push $DOCKER_USER/sdal-notifier-bot
 
 # DEPLOYING
 
@@ -49,6 +49,6 @@ deploy:
     # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f bmstu-structure-view || true
     # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 80:80 --name bmstu-structure-view almosvirog/bmstu-structure-view
 
-    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker pull almosvirog/sdal-api
-    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f sdal-api || true
-    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 3000:3000 --name sdal-api almosvirog/sdal-api
+    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker pull almosvirog/sdal-notifier-bot
+    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f sdal-notifier-bot || true
+    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 3010:3010 --name sdal-notifier-bot almosvirog/sdal-notifier-bot
