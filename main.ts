@@ -1,5 +1,7 @@
 import Telegraf from 'telegraf';
 import express from 'express';
+import cors from 'cors';
+
 
 const users = [] as number[];
 
@@ -24,6 +26,8 @@ bot.launch();
 
 const app = express();
 app.use(express.json())
+app.use(cors())
+
 app.post('/broadcast', function (req, res) {
     const message = req.param('message') || req.body && req.body.message as string;
     if (message) {
