@@ -2,24 +2,30 @@ import Telegraf from 'telegraf';
 import express, { json } from 'express';
 import cors from 'cors';
 
+const PASSWORD = 'I$0T-web-дизайн!!!'
 
 const users = new Set<number>();
 
 const bot = new Telegraf('984030796:AAHDnjbKPTto0LFXu6t6Fwl-YmIkuhlsLr0');
 
-console.log('starting')
+console.log('starting');
 
 bot.start(ctx => {
     if (ctx.chat) {
+        bot.telegram.sendMessage(ctx.chat.id, 'Hello! Enter the password to start getting notifications.');
+    }
+})
+
+bot.hears(PASSWORD, ctx => {
+    if (ctx.chat) {
         users.add(ctx.chat.id);
-        console.log('CHAT ID ADDED:', ctx.chat.id);
-        bot.telegram.sendMessage(ctx.chat.id, 'You will get notifications');
+        bot.telegram.sendMessage(ctx.chat.id, 'You will be getting notifications.');
     }
 })
 
 bot.command('users', ctx => {
     if (ctx.chat) {
-        bot.telegram.sendMessage(ctx.chat.id, JSON.stringify(users));
+        bot.telegram.sendMessage(ctx.chat.id, JSON.stringify([...users]));
     }
 })
 
@@ -30,6 +36,8 @@ function broadcast(message: string) {
 }
 
 bot.launch();
+
+console.log('started');
 
 const app = express();
 app.use(express.json())
