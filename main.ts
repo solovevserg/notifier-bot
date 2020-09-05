@@ -2,13 +2,16 @@ import Telegraf from 'telegraf';
 import express, { json } from 'express';
 import cors from 'cors';
 
-const PASSWORD = 'I$0T-web-дизайн!!!'
+const PASSWORD = process.env.PASSWORD || 'admin123'
+const TOKEN = process.env.TOKEN || process.argv[0];
+const PORT = process.env.PORT || 3000;
+
+if (!TOKEN) {
+    throw new Error('No token provided.')
+}
 
 const users = new Set<number>();
-
-const bot = new Telegraf('984030796:AAHDnjbKPTto0LFXu6t6Fwl-YmIkuhlsLr0');
-
-console.log('starting');
+const bot = new Telegraf(TOKEN);
 
 bot.start(ctx => {
     if (ctx.chat) {
@@ -35,12 +38,13 @@ function broadcast(message: string) {
     })
 }
 
+console.log('Starting the bot...');
 bot.launch();
 
-console.log('started');
+console.log('Bot started and waiting for new messages.');
 
 const app = express();
-app.use(express.json())
+app.use(json())
 app.use(cors())
 
 app.post('/broadcast', function (req, res) {
@@ -54,5 +58,5 @@ app.post('/broadcast', function (req, res) {
     }
 })
 
-
-app.listen(3010);
+console.log('Bot started and waiting for new messages.');
+app.listen(PORT);

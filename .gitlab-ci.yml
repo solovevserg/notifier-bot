@@ -2,24 +2,9 @@ stages:
   - dockerize
   - deploy
 
-#DOCKERIZING
+# DOCKERIZING
 
-# dockerize_static:
-#   stage: dockerize
-#   image: docker
-#   variables:
-#     GIT_STRATEGY: clone
-#     DOCKER_DRIVER: overlay2
-#   services:
-#     - docker:dind
-#   script:
-#     - docker build -t bmstu-structure-view ./assets
-#   after_script:
-#     - docker login --username=$DOCKER_USER --password=$DOCKER_PASSWD
-#     - docker tag bmstu-structure-view $DOCKER_USER/bmstu-structure-view
-#     - docker push $DOCKER_USER/bmstu-structure-view
-
-dockerize_api:
+dockerize:
   stage: dockerize
   image: docker
   variables:
@@ -42,13 +27,9 @@ deploy:
   variables:
     GIT_STRATEGY: clone
   dependencies:
-    # - dockerize_static
-    - dockerize_api
+    - dockerize
   script:
-    # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker pull almosvirog/bmstu-structure-view
-    # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f bmstu-structure-view || true
-    # - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 80:80 --name bmstu-structure-view almosvirog/bmstu-structure-view
-
     - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker pull almosvirog/sdal-notifier-bot
     - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f sdal-notifier-bot || true
-    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 3010:3010 --name sdal-notifier-bot almosvirog/sdal-notifier-bot
+    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 3010:3000 --name sdal-notifier-bot almosvirog/sdal-notifier-bot
+  when: manual
