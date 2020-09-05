@@ -41,7 +41,7 @@ function broadcast(message: string) {
 console.log('Starting the bot...');
 bot.launch();
 
-console.log('Bot started and waiting for new messages.');
+console.log('Bot started and is waiting for new messages.');
 
 const app = express();
 app.use(json())
@@ -58,5 +58,5 @@ app.post('/broadcast', function (req, res) {
     }
 })
 
-console.log('Bot started and waiting for new messages.');
 app.listen(PORT);
+console.log(`Express server is started at port ${PORT} and is ready for broadcasting.`);
