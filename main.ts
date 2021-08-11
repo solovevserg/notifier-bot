@@ -1,6 +1,7 @@
 import Telegraf from 'telegraf';
 import express, { json } from 'express';
 import cors from 'cors';
+import { ParseMode } from 'telegraf/typings/telegram-types';
 
 const PASSWORD = process.env.PASSWORD || 'admin123'
 const TOKEN = process.env.TOKEN || process.argv[0];
@@ -32,9 +33,9 @@ bot.command('users', ctx => {
     }
 })
 
-function broadcast(message: string) {
+function broadcast(message: string, parse_mode: ParseMode = 'HTML') {
     users.forEach(id => {
-        bot.telegram.sendMessage(id, message, {parse_mode: 'MarkdownV2'});
+        bot.telegram.sendMessage(id, message, {parse_mode});
     })
 }
 
@@ -50,7 +51,7 @@ app.use(cors())
 app.post('/broadcast', function (req, res) {
     const message = req.param('message') || req.body && req.body.message as string;
     if (message) {
-        broadcast(message);
+        broadcast(message, req.params['parse_mode'] as ParseMode | undefined);
         console.log('MESSAGE SENT:', message);
         res.sendStatus(200);
     } else {
@@ -59,4 +60,5 @@ app.post('/broadcast', function (req, res) {
 })
 
 app.listen(PORT);
+
 console.log(`Express server is started at port ${PORT} and is ready for broadcasting.`);
