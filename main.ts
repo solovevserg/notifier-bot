@@ -34,7 +34,7 @@ bot.command('users', ctx => {
 
 function broadcast(message: string) {
     users.forEach(id => {
-        bot.telegram.sendMessage(id, message);
+        bot.telegram.sendMessage(id, message, {parse_mode: 'MarkdownV2'});
     })
 }
 
