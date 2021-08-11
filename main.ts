@@ -4,8 +4,10 @@ import cors from 'cors';
 import { ParseMode } from 'telegraf/typings/telegram-types';
 
 const PASSWORD = process.env.PASSWORD || 'admin123'
-const TOKEN = process.env.TOKEN || process.argv[0];
+const TOKEN = process.env.TOKEN || process.argv[2];
 const PORT = process.env.PORT || 3000;
+
+// console.log(TOKEN)
 
 if (!TOKEN) {
     throw new Error('No token provided.')
@@ -33,9 +35,9 @@ bot.command('users', ctx => {
     }
 })
 
-function broadcast(message: string, parse_mode: ParseMode = 'HTML') {
+function broadcast(message: string, parse_mode: ParseMode = 'Markdown') {
     users.forEach(id => {
-        bot.telegram.sendMessage(id, message, {parse_mode});
+        bot.telegram.sendMessage(id, message, {parse_mode: parse_mode});
     })
 }
 
@@ -49,9 +51,9 @@ app.use(json())
 app.use(cors())
 
 app.post('/broadcast', function (req, res) {
-    const message = req.param('message') || req.body && req.body.message as string;
+    const message = req.params['message'] || req.body && req.body.message as string;
     if (message) {
-        broadcast(message, req.query['parse_mode'] as ParseMode | undefined);
+        broadcast(message, req.query['parse_mode'] as ParseMode | 'Markdown');
         console.log('MESSAGE SENT:', message);
         res.sendStatus(200);
     } else {
