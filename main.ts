@@ -51,7 +51,7 @@ app.use(cors())
 app.post('/broadcast', function (req, res) {
     const message = req.param('message') || req.body && req.body.message as string;
     if (message) {
-        broadcast(message, req.params['parse_mode'] as ParseMode | undefined);
+        broadcast(message, req.query['parse_mode'] as ParseMode | undefined);
         console.log('MESSAGE SENT:', message);
         res.sendStatus(200);
     } else {
