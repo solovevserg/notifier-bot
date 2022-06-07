@@ -1,35 +1,45 @@
+variables:
+  APP_NAME: notifier-bot
+  APP_PORT: 3000
+  DEPLOY_PUBLIC_PORT: 8075
+  DEPLOY_NETWORK_NAME: proxy
+  DOCKER_IMAGE_NAME: $DOCKER_ORGANIZATION/$APP_NAME
+  DOCKER_DRIVER: overlay2
+  GIT_STRATEGY: clone
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
-  - dockerize
+  - publish
   - deploy
 
-# DOCKERIZING
+# PUBLISH
 
-dockerize:
-  stage: dockerize
+publish:
+  stage: publish
   image: docker
-  variables:
-    GIT_STRATEGY: clone
-    DOCKER_DRIVER: overlay2
   services:
     - docker:dind
   script:
-    - docker build -t sdal-notifier-bot .
+    - docker build -t $DOCKER_IMAGE_NAME .
   after_script:
-    - docker login --username=$DOCKER_USER --password=$DOCKER_PASSWD
-    - docker tag sdal-notifier-bot $DOCKER_USER/sdal-notifier-bot
-    - docker push $DOCKER_USER/sdal-notifier-bot
+    - docker login --username=$DOCKER_USER --password=$DOCKER_TOKEN
+    - docker push $DOCKER_IMAGE_NAME
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
 
-# DEPLOYING
+# DEPLOY
 
 deploy:
   stage: deploy
   image: ictu/sshpass
-  variables:
-    GIT_STRATEGY: clone
-  dependencies:
-    - dockerize
+  needs:
+    - publish
+  before_script:
+    - alias ssh-pass-server='sshpass -p "$SDAL_DEFAULT_PASSWORD" ssh -oStrictHostKeyChecking=no $SDAL_DEFAULT_USERNAME@$SDAL_DEFAULT_IP'
   script:
-    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker pull almosvirog/sdal-notifier-bot
-    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker rm -f sdal-notifier-bot || true
-    - sshpass -p "$SDAL_PASSWD" ssh -oStrictHostKeyChecking=no root@95.216.188.201 docker run -d -p 3010:3000 --name sdal-notifier-bot almosvirog/sdal-notifier-bot
+    - ssh-pass-server docker pull $DOCKER_IMAGE_NAME
+    - ssh-pass-server docker rm -f $APP_NAME || true
+    - ssh-pass-server docker run -d -p $DEPLOY_PUBLIC_PORT:$APP_PORT --network=$DEPLOY_NETWORK_NAME --name $APP_NAME $DOCKER_IMAGE_NAME
   when: manual
