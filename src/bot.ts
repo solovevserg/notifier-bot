@@ -31,6 +31,6 @@ bot.command('chats', async ({ chat }) => {
     if (chat && store.has(chat.id)) {
         const chats = store.chats;
         await bot.telegram.sendMessage(chat.id, JSON.stringify(chats));
-        console.log(`Chat ${chat.id}: called /users.`);
+        console.log(`Chat ${chat.id}: called /chats.`);
     }
 })
