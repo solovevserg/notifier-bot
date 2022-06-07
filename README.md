@@ -13,7 +13,7 @@ Use Docker image
 docker run sdalbmstu/notifier-bot \
     -e TOKEN=<your_telegram_token> \
     -e PASSWORD=<your_password> \
-    -v <data_storage_folder>:.data \
+    -v <data_storage_folder>:/bot/.data \
     -p 8080:3000
 
 # To test
