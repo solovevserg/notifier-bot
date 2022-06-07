@@ -10,10 +10,10 @@ Use Docker image
 
 ```bash
 # To run
-docker run sdallaboratory/notifier-bot \
+docker run sdalbmstu/notifier-bot \
     -e TOKEN=<your_telegram_token> \
     -e PASSWORD=<your_password> \
-    -v <your_json_path>:.data.json \
+    -v <data_storage_folder>:.data \
     -p 8080:3000
 
 # To test
