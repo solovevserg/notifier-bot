@@ -10,9 +10,16 @@ Use Docker image
 
 ```bash
 # To run
-docker run sdallaboratory/notifier-bot -e TOKEN=<your_telegram_token> -e PASSWORD=<your_password> -p 8080:3000
+docker run sdallaboratory/notifier-bot \
+    -e TOKEN=<your_telegram_token> \
+    -e PASSWORD=<your_password> \
+    -v <your_json_path>:.data.json \
+    -p 8080:3000
+
 # To test
-curl -X POST http://localhost:8080/messages -H 'Content-Type: application/json' -d '{"text":"*Hello* :)","parseMode":"MarkdownV2"}'
+curl -X POST http://localhost:8080/messages \
+    -H 'Content-Type: application/json' \
+    -d '{"text":"*Hello* :)","parseMode":"MarkdownV2"}'
 ```
 
 ### How to broadcast a message
