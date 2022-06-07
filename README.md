@@ -19,7 +19,7 @@ docker run sdalbmstu/notifier-bot \
 # To test
 curl -X POST http://localhost:8080/messages \
     -H 'Content-Type: application/json' \
-    -d '{"text":"*Hello* :)","parseMode":"MarkdownV2"}'
+    -d '{"text":"*Hello*","parseMode":"MarkdownV2"}'
 ```
 
 ### How to broadcast a message
