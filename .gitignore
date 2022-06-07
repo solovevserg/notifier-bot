@@ -34,4 +34,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # Data storage
-.data.json
+.data/
