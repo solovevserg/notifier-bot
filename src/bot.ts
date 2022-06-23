@@ -13,7 +13,7 @@ if (!PASSWORD) {
 export const bot = new Telegraf(TOKEN);
 
 bot.start(async ({ chat }) => {
-    if (chat) {
+    if (chat && !store.has(chat.id)) {
         await bot.telegram.sendMessage(chat.id, 'Hello! Enter the password to start getting notifications.');
         console.log(`Chat ${chat.id}: called /start.`);
     }
@@ -38,6 +38,7 @@ bot.command('chats', async ({ chat }) => {
 bot.command('stop', async ({ chat }) => {
     if (chat && store.has(chat.id)) {
         store.delete(chat.id);
+        await bot.telegram.sendMessage(chat.id, 'You will not be getting notifications more. Enter start to undo.');
         console.log(`Chat ${chat.id}: called /stop. Chat was sucessfully removed`);
     }
 })
