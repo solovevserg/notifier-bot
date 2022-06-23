@@ -20,7 +20,7 @@ bot.start(async ({ chat }) => {
 })
 
 bot.hears(PASSWORD, async ({ chat }) => {
-    if (chat) {
+    if (chat && !store.has(chat.id)) {
         store.add(chat.id);
         await bot.telegram.sendMessage(chat.id, 'You will be getting notifications.');
         console.log(`Chat ${chat.id}: successfully entered password.`);
@@ -32,5 +32,12 @@ bot.command('chats', async ({ chat }) => {
         const chats = store.chats;
         await bot.telegram.sendMessage(chat.id, JSON.stringify(chats));
         console.log(`Chat ${chat.id}: called /chats.`);
+    }
+})
+
+bot.command('stop', async ({ chat }) => {
+    if (chat && store.has(chat.id)) {
+        store.delete(chat.id);
+        console.log(`Chat ${chat.id}: called /stop. Chat was sucessfully removed`);
     }
 })
