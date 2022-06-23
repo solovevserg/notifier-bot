@@ -6,10 +6,10 @@ import { Message } from "./models.ts/message";
 import { store } from "./store";
 
 async function broadcast(message: string, parseMode: ParseMode = 'Markdown') {
-
-    await Promise.all(store.chats.map(id => {
-        bot.telegram.sendMessage(id, message, { parse_mode: parseMode });
-    }))
+    await Promise.all(store.chats.map(id =>
+        bot.telegram.sendMessage(id, message, { parse_mode: parseMode })
+            .catch((error) => console.log(`En error occured while sending notification to chat ${id}`, error))
+    ));
 }
 
 const server = express();
